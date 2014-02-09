@@ -62,6 +62,8 @@ Writing your Code
 
 <a name="no-validation-message"></a>
 **Don't show the Valid Message `no-validation-message="true"`**
+`angular-validation` still working, just only `hide` the message <br/>
+New features: `no-success-message` `no-error-message`
 
 ```html
 <label>Number</label>

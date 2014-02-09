@@ -46,6 +46,16 @@ angular.module('myApp', ['validation'])
             changeErrorMsg: 'This is the First Error Msg',
             changeMsg: function () {
                 $scope.form4.changeErrorMsg = 'This is the Second Error Msg';
+            },
+            showHide: 'hide',
+            showHideMessage: function () {
+                if($scope.form4.showHide == 'show') {
+                    $validationProvider.hideMsg();
+                    $scope.form4.showHide = 'hide';
+                } else {
+                    $validationProvider.showMsg();
+                    $scope.form4.showHide = 'show';
+                }
             }
         };
 

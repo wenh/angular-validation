@@ -146,6 +146,40 @@
 
 
             /**
+             * Show or Hide Validation message
+             * showSuccessMsg / hideSuccessMsg
+             * showErrorMsg / hideErrorMsg
+             * showMsg / hideMsg (both success and error)
+             */
+            this.showOrHideMsg = {
+                success: {
+                    show: function () {
+                        $scope.$broadcast('noSuccessMessage', { success: true });
+                    },
+                    hide: function () {
+                        $scope.$broadcast('noSuccessMessage', { success: false });
+                    }
+                },
+                error: {
+                    show: function () {
+                        $scope.$broadcast('noErrorMessage', { error: true });
+                    },
+                    hide: function () {
+                        $scope.$broadcast('noErrorMessage', { error: false });
+                    }
+                },
+                both: {
+                    show: function () {
+                        $scope.$broadcast('noValidationMessage', { both: true });
+                    },
+                    hide: function () {
+                        $scope.$broadcast('noValidationMessage', { both: false });
+                    }
+                }
+            };
+
+
+            /**
              * Check form valid, return true
              * checkValid(Form): Check the specific form(Form) valid from angular `$valid`
              * @param form
@@ -230,6 +264,12 @@
                     getExpression: this.getExpression,
                     setDefaultMsg: this.setDefaultMsg,
                     getDefaultMsg: this.getDefaultMsg,
+                    showMsg: this.showOrHideMsg.both.show,
+                    showSuccessMsg: this.showOrHideMsg.success.show,
+                    showErrorsMsg: this.showOrHideMsg.error.show,
+                    hideMsg: this.showOrHideMsg.both.hide,
+                    hideSuccessMsg: this.showOrHideMsg.success.hide,
+                    hideErrorsMsg: this.showOrHideMsg.error.hide,
                     checkValid: this.checkValid,
                     validate: this.validate,
                     reset: this.reset
@@ -243,7 +283,8 @@
         .directive('validator', ['$injector', function ($injector) {
 
             var $validationProvider = $injector.get('$validation'),
-                $q = $injector.get('$q');
+                $q = $injector.get('$q'),
+                $timeout = $injector.get('$timeout');
 
             /**
              * Do this function iff validation valid
@@ -347,20 +388,6 @@
 
 
                     /**
-                     * Don't showup the validation Message
-                     */
-                    attrs.$observe('noValidationMessage', function (value) {
-                        var el = element.next();
-                        if (value == "true" || value == true) {
-                            el.css('display', 'none');
-                        } else if (value == "false" || value == false) {
-                            el.css('display', 'block');
-                        } else {
-                        }
-                    });
-
-
-                    /**
                      * Check Every validator
                      */
                     validator.forEach(function (validation) {
@@ -428,7 +455,73 @@
                             }
                             checkValidation(scope, element, attrs, ctrl, validation, value);
                         });
+                    });
 
+
+                    /**
+                     * show/hide success Message
+                     * show/hide error Message
+                     * show/hide validation Message (both success and error)
+                     * $on - allow user to show/hide by using $provider `showMsg` `hideMsg`
+                     */
+                    $timeout(function () {
+
+                        scope.$on('noValidationMessage', function (event, data) {
+                            /**
+                             * data parameter
+                             * - (bool) success
+                             * - (bool) error
+                             * - (bool) both
+                             */
+                            if (data.hasOwnProperty('success')) {
+                                attrs.$set('noSuccessMessage', data.success);
+                            }
+
+                            if (data.hasOwnProperty('error')) {
+                                attrs.$set('noErrorMessage', data.error);
+                            }
+
+                            if (data.hasOwnProperty('both')) {
+                                attrs.$set('noValidationMessage', data.both);
+                            }
+                        });
+
+                        attrs.$observe('noSuccessMessage', function (value) {
+                            var el = element.next();
+                            if (ctrl.$valid && !ctrl.$invalid) {
+                                if (value == "true" || value == true) {
+                                    el.css('display', 'none');
+                                } else if (value == "false" || value == false) {
+                                    el.css('display', 'block');
+                                } else {
+                                    attrs.noSuccessMessage = 'false';
+                                }
+                            }
+                        });
+
+                        attrs.$observe('noErrorMessage', function (value) {
+                            var el = element.next();
+                            if (ctrl.$invalid && !ctrl.$valid) {
+                                if (value == "true" || value == true) {
+                                    el.css('display', 'none');
+                                } else if (value == "false" || value == false) {
+                                    el.css('display', 'block');
+                                } else {
+                                    attrs.noErrorMessage = 'false';
+                                }
+                            }
+                        });
+
+                        attrs.$observe('noValidationMessage', function (value) {
+                            var el = element.next();
+                            if (value == "true" || value == true) {
+                                el.css('display', 'none');
+                            } else if (value == "false" || value == false) {
+                                el.css('display', 'block');
+                            } else {
+                                attrs.noValidationMessage = 'false';
+                            }
+                        });
 
                     });
                 }

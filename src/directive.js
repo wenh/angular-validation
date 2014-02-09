@@ -3,7 +3,8 @@
         .directive('validator', ['$injector', function ($injector) {
 
             var $validationProvider = $injector.get('$validation'),
-                $q = $injector.get('$q');
+                $q = $injector.get('$q'),
+                $timeout = $injector.get('$timeout');
 
             /**
              * Do this function iff validation valid
@@ -107,20 +108,6 @@
 
 
                     /**
-                     * Don't showup the validation Message
-                     */
-                    attrs.$observe('noValidationMessage', function (value) {
-                        var el = element.next();
-                        if (value == "true" || value == true) {
-                            el.css('display', 'none');
-                        } else if (value == "false" || value == false) {
-                            el.css('display', 'block');
-                        } else {
-                        }
-                    });
-
-
-                    /**
                      * Check Every validator
                      */
                     validator.forEach(function (validation) {
@@ -188,7 +175,73 @@
                             }
                             checkValidation(scope, element, attrs, ctrl, validation, value);
                         });
+                    });
 
+
+                    /**
+                     * show/hide success Message
+                     * show/hide error Message
+                     * show/hide validation Message (both success and error)
+                     * $on - allow user to show/hide by using $provider `showMsg` `hideMsg`
+                     */
+                    $timeout(function () {
+
+                        scope.$on('noValidationMessage', function (event, data) {
+                            /**
+                             * data parameter
+                             * - (bool) success
+                             * - (bool) error
+                             * - (bool) both
+                             */
+                            if (data.hasOwnProperty('success')) {
+                                attrs.$set('noSuccessMessage', data.success);
+                            }
+
+                            if (data.hasOwnProperty('error')) {
+                                attrs.$set('noErrorMessage', data.error);
+                            }
+
+                            if (data.hasOwnProperty('both')) {
+                                attrs.$set('noValidationMessage', data.both);
+                            }
+                        });
+
+                        attrs.$observe('noSuccessMessage', function (value) {
+                            var el = element.next();
+                            if (ctrl.$valid && !ctrl.$invalid) {
+                                if (value == "true" || value == true) {
+                                    el.css('display', 'none');
+                                } else if (value == "false" || value == false) {
+                                    el.css('display', 'block');
+                                } else {
+                                    attrs.noSuccessMessage = 'false';
+                                }
+                            }
+                        });
+
+                        attrs.$observe('noErrorMessage', function (value) {
+                            var el = element.next();
+                            if (ctrl.$invalid && !ctrl.$valid) {
+                                if (value == "true" || value == true) {
+                                    el.css('display', 'none');
+                                } else if (value == "false" || value == false) {
+                                    el.css('display', 'block');
+                                } else {
+                                    attrs.noErrorMessage = 'false';
+                                }
+                            }
+                        });
+
+                        attrs.$observe('noValidationMessage', function (value) {
+                            var el = element.next();
+                            if (value == "true" || value == true) {
+                                el.css('display', 'none');
+                            } else if (value == "false" || value == false) {
+                                el.css('display', 'block');
+                            } else {
+                                attrs.noValidationMessage = 'false';
+                            }
+                        });
 
                     });
                 }
