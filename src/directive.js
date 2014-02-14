@@ -2,6 +2,9 @@
     angular.module('validation.directive', ['validation.provider'])
         .directive('validator', ['$injector', function ($injector) {
 
+            var validClass = 'val-valid',
+                invalidClass = 'val-invalid';
+
             var $validationProvider = $injector.get('$validation'),
                 $q = $injector.get('$q'),
                 $timeout = $injector.get('$timeout');
@@ -16,7 +19,18 @@
              * @returns {}
              */
             var validFunc = function (element, validMessage, validation, callback, ctrl) {
-                element.next().html($validationProvider.getSuccessHTML(validMessage || $validationProvider.getDefaultMsg(validation).success));
+                var el = element.next();
+
+                if (!el.hasClass(validClass)) {
+                    el.addClass(validClass);
+                }
+
+                if (el.hasClass(invalidClass)) {
+                    el.removeClass(invalidClass);
+                }
+
+
+                el.html($validationProvider.getSuccessHTML(validMessage || $validationProvider.getDefaultMsg(validation).success));
                 ctrl.$setValidity(ctrl.$name, true);
                 if (callback) callback();
             };
@@ -32,7 +46,17 @@
              * @returns {}
              */
             var invalidFunc = function (element, validMessage, validation, callback, ctrl) {
-                element.next().html($validationProvider.getErrorHTML(validMessage || $validationProvider.getDefaultMsg(validation).error));
+                var el = element.next();
+
+                if (!el.hasClass(invalidClass)) {
+                    el.addClass(invalidClass);
+                }
+
+                if (el.hasClass(validClass)) {
+                    el.removeClass(validClass);
+                }
+
+                el.html($validationProvider.getErrorHTML(validMessage || $validationProvider.getDefaultMsg(validation).error));
                 ctrl.$setValidity(ctrl.$name, false);
                 if (callback) callback();
             };
@@ -208,32 +232,39 @@
 
                         attrs.$observe('noSuccessMessage', function (value) {
                             var el = element.next();
-                            if (ctrl.$valid && !ctrl.$invalid) {
-                                if (value == "true" || value == true) {
-                                    el.css('display', 'none');
-                                } else if (value == "false" || value == false) {
-                                    el.css('display', 'block');
-                                } else {
-                                    attrs.noSuccessMessage = 'false';
+
+                            if (attrs.noValidationMessage == "false" || attrs.noValidationMessage == false) {
+                                if (ctrl.$valid && !ctrl.$invalid && el.hasClass(validClass)) {
+                                    if (value == "true" || value == true) {
+                                        el.css('display', 'none');
+                                    } else if (value == "false" || value == false) {
+                                        el.css('display', 'block');
+                                    } else {
+                                        attrs.noSuccessMessage = 'false';
+                                    }
                                 }
                             }
                         });
 
                         attrs.$observe('noErrorMessage', function (value) {
                             var el = element.next();
-                            if (ctrl.$invalid && !ctrl.$valid) {
-                                if (value == "true" || value == true) {
-                                    el.css('display', 'none');
-                                } else if (value == "false" || value == false) {
-                                    el.css('display', 'block');
-                                } else {
-                                    attrs.noErrorMessage = 'false';
+
+                            if (attrs.noValidationMessage == "false" || attrs.noValidationMessage == false) {
+                                if (ctrl.$invalid && !ctrl.$valid && el.hasClass(invalidClass)) {
+                                    if (value == "true" || value == true) {
+                                        el.css('display', 'none');
+                                    } else if (value == "false" || value == false) {
+                                        el.css('display', 'block');
+                                    } else {
+                                        attrs.noErrorMessage = 'false';
+                                    }
                                 }
                             }
                         });
 
                         attrs.$observe('noValidationMessage', function (value) {
                             var el = element.next();
+
                             if (value == "true" || value == true) {
                                 el.css('display', 'none');
                             } else if (value == "false" || value == false) {

@@ -151,26 +151,26 @@
             this.showOrHideMsg = {
                 success: {
                     show: function () {
-                        $scope.$broadcast('noSuccessMessage', { success: true });
+                        $scope.$broadcast('noValidationMessage', { success: false });
                     },
                     hide: function () {
-                        $scope.$broadcast('noSuccessMessage', { success: false });
+                        $scope.$broadcast('noValidationMessage', { success: true });
                     }
                 },
                 error: {
                     show: function () {
-                        $scope.$broadcast('noErrorMessage', { error: true });
+                        $scope.$broadcast('noValidationMessage', { error: false });
                     },
                     hide: function () {
-                        $scope.$broadcast('noErrorMessage', { error: false });
+                        $scope.$broadcast('noValidationMessage', { error: true });
                     }
                 },
                 both: {
                     show: function () {
-                        $scope.$broadcast('noValidationMessage', { both: true });
+                        $scope.$broadcast('noValidationMessage', { both: false });
                     },
                     hide: function () {
-                        $scope.$broadcast('noValidationMessage', { both: false });
+                        $scope.$broadcast('noValidationMessage', { both: true });
                     }
                 }
             };
@@ -263,10 +263,10 @@
                     getDefaultMsg: this.getDefaultMsg,
                     showMsg: this.showOrHideMsg.both.show,
                     showSuccessMsg: this.showOrHideMsg.success.show,
-                    showErrorsMsg: this.showOrHideMsg.error.show,
+                    showErrorMsg: this.showOrHideMsg.error.show,
                     hideMsg: this.showOrHideMsg.both.hide,
                     hideSuccessMsg: this.showOrHideMsg.success.hide,
-                    hideErrorsMsg: this.showOrHideMsg.error.hide,
+                    hideErrorMsg: this.showOrHideMsg.error.hide,
                     checkValid: this.checkValid,
                     validate: this.validate,
                     reset: this.reset

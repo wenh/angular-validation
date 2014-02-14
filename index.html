@@ -25,6 +25,13 @@
 </div>
 
 <div class="row">
+    <div class="small-12 medium-12 large-6 large-centered columns">
+        <input type="checkbox" ng-model="showSuccessMsg" id="successMsg"><label for="successMsg">Show success message</label>
+        <input type="checkbox" ng-model="showErrorMsg" id="errorMsg"><label for="errorMsg">Show error message</label>
+    </div>
+</div>
+
+<div class="row">
     <div class="small-12 medium-12 large-6 columns">
         <form name="Form" id="form1">
             <fieldset>
@@ -58,12 +65,12 @@
                 <input type="text"
                        name="numberWatch"
                        ng-model="form.number"
-                       validator="number"
+                       validator="required, number"
                        email-error-message="Error Number"
                        email-success-message="Good Number"/>
 
                 <label>Required (Invalid Callback alert)</label>
-                <input type="text" name="requiredCallback" no-success-message="true" ng-model="form.requiredCallback" validator="required" invalid-callback='error("Must be Required");'/>
+                <input type="text" name="requiredCallback" ng-model="form.requiredCallback" validator="required" invalid-callback='error("Must be Required");'/>
 
                 <label>IP address (Custom setup the new validator)</label>
                 <input type="text" name="ipWatch" ng-model="form.ip" validator="ip"/>
@@ -171,7 +178,6 @@
                     </div>
                 </div>
 
-                <button class="button alert" ng-click="form4.showHideMessage()">click to {{ form4.showHide }} Message</button>
             </fieldset>
         </form>
     </div>
